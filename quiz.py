@@ -1,158 +1,39 @@
-# Clase Nodo
 class Nodo:
     def __init__(self, data):
         self.data = data
         self.siguiente = None
 
-# CLase Listas enlazada simple
+
 class ListaSE:
     def __init__(self):
         self.cabeza = None
 
-# Lista Vacia
-    def vacio(self):
-        if self.cabeza == None:
-            print("Está vacia")
-        else:
-            print("Lista no vacia")
-
-    # Agregar al inicio
-    def agregarInicio(self, data):
-        nuevo_nodo = Nodo(data)
-        if self.cabeza is None:
-            self.cabeza = nuevo_nodo
-            return
-        else:
-            nuevo_nodo.siguiente = self.cabeza
-            self.cabeza = nuevo_nodo
-
-#insertar al final
     def insertarAlFinal(self, data):
-        nuevo_nodo = Nodo(data)
-
+        nuevo = Nodo(data)
         if self.cabeza is None:
-            self.cabeza = nuevo_nodo
+            self.cabeza = nuevo
         else:
             actual = self.cabeza
-            while actual.siguiente is not None:
+            while actual.siguiente:
                 actual = actual.siguiente
+            actual.siguiente = nuevo
 
-            actual.siguiente = nuevo_nodo
-        
-# agregar un elemento antes de x
-    def agregarAntesDeX(self, data, x):
-        nuevo_nodo = Nodo(data)
-
+    def eliminarObjeto(self, objeto):
         if self.cabeza is None:
-            print("La lista está vacía. No se puede agregar antes de", x)
             return
 
-        if self.cabeza.data == x:
-            nuevo_nodo.siguiente = self.cabeza
-            self.cabeza = nuevo_nodo
-            return
-    
-        actual = self.cabeza
-    
-        while actual.siguiente is not None and actual.siguiente.data != x:
-            actual = actual.siguiente
-        
-        if actual.siguiente is None:
-            print("El elemento", x, "no se encontró en la lista.")
-        else:
-            nuevo_nodo.siguiente = actual.siguiente
-            actual.siguiente = nuevo_nodo
-
-    #agregar un elemento despues de x
-    def agregarDespuesDeX(self, data, x):
-        nuevo_nodo = Nodo(data)
-
-        if self.cabeza is None:
-            print("La lista está vacía. No se puede agregar después de", x)
-            return
-
-        actual = self.cabeza
-
-        while actual is not None and actual.data != x:
-            actual = actual.siguiente
-
-        if actual is None:
-            print("El elemento", x, "no se encontró en la lista.")
-        else:
-            nuevo_nodo.siguiente = actual.siguiente
-            actual.siguiente = nuevo_nodo
-
-# eliminar x
-    def eliminarX(self, x):
-        if self.cabeza is None:
-            print("La lista está vacía. No se puede eliminar", x)
-            return
-
-        if self.cabeza.data == x:
+        if self.cabeza.data == objeto:
             self.cabeza = self.cabeza.siguiente
             return
 
         actual = self.cabeza
-
-        while actual.siguiente is not None and actual.siguiente.data != x:
+        while actual.siguiente and actual.siguiente.data != objeto:
             actual = actual.siguiente
 
-        if actual.siguiente is None:
-            print("El elemento", x, "no se encontró en la lista.")
-        else:
+        if actual.siguiente:
             actual.siguiente = actual.siguiente.siguiente
 
-# mostrar la lista
-    def mostrar(self):
-        actual = self.cabeza
-        while actual is not None:
-            print(actual.data, end=" -> ")
-            actual = actual.siguiente
-        print("None")        
-
-#eliminar el primer elemento
-    def eliminarPrimerElemento(self):
-        if self.cabeza is None:
-            print("La lista está vacía. No se puede eliminar el primer elemento.")
-            return
-
-        self.cabeza = self.cabeza.siguiente
-
-#eliminar el ultimo elemento
-    def eliminarUltimoElemento(self):    
-        if self.cabeza is None:
-            print("La lista está vacía. No se puede eliminar el último elemento.")
-            return
-
-        if self.cabeza.siguiente is None:
-            self.cabeza = None
-            return
-
-        actual = self.cabeza
-        while actual.siguiente.siguiente is not None:
-            actual = actual.siguiente
-
-        actual.siguiente = None
-
-#buscar elemento
-    def buscar(self, x):
-        actual = self.cabeza
-        while actual is not None:
-            if actual.data == x:
-                return True
-            actual = actual.siguiente
-        return False
-
-#contar elementos
-    def contarElementos(self):
-        contador = 0
-        actual = self.cabeza
-        while actual is not None:
-            contador += 1
-            actual = actual.siguiente
-        return contador
-
-# Clase para Huésped
+# Clase Huésped
 class Huesped:
     def __init__(self, cedula, nombre, habitacion):
         self.cedula = cedula
@@ -160,80 +41,173 @@ class Huesped:
         self.habitacion = habitacion
 
     def __str__(self):
-        return f"Cédula: {self.cedula}, Nombre: {self.nombre}, Habitación: {self.habitacion}"
+        return f"Cédula: {self.cedula} | Nombre: {self.nombre} | Habitación: {self.habitacion}"
 
-# Clase para Habitación
+
+# Clase Habitación
 class Habitacion:
     def __init__(self, numero):
         self.numero = numero
         self.disponible = True
         self.huesped = None
 
-    def ocupar(self, huesped):
-        if self.disponible:
-            self.disponible = False
-            self.huesped = huesped
-            return True
-        return False
-
-    def liberar(self):
-        if not self.disponible:
-            self.disponible = True
-            huesped = self.huesped
-            self.huesped = None
-            return huesped
-        return None
-
     def __str__(self):
-        estado = "Disponible" if self.disponible else f"Ocupada por {self.huesped.nombre if self.huesped else 'N/A'}"
-        return f"Habitación {self.numero}: {estado}"
+        if self.disponible:
+            return f"Habitación {self.numero} - Disponible"
+        else:
+            return f"Habitación {self.numero} - Ocupada por {self.huesped.nombre}"
 
-# Sistema de Hotel
+
+# Sistema del Hotel
 class SistemaHotel:
     def __init__(self, num_habitaciones):
         self.habitaciones = ListaSE()
+        self.entradas = ListaSE()
+        self.salidas = ListaSE()
+
         for i in range(1, num_habitaciones + 1):
             self.habitaciones.insertarAlFinal(Habitacion(i))
-        self.entradas = ListaSE()  # Lista de huéspedes actuales
-        self.salidas = ListaSE()   # Lista de huéspedes que se retiraron
 
+    # Buscar habitación por número
+    def buscar_habitacion(self, numero):
+        actual = self.habitaciones.cabeza
+        while actual:
+            if actual.data.numero == numero:
+                return actual.data
+            actual = actual.siguiente
+        return None
 
-    def consulta_huesped_individual(self, cedula):
+    # Registrar entrada
+    def registrar_entrada(self, cedula, nombre, num_habitacion):
+        habitacion = self.buscar_habitacion(num_habitacion)
+
+        if habitacion and habitacion.disponible:
+            huesped = Huesped(cedula, nombre, num_habitacion)
+            habitacion.disponible = False
+            habitacion.huesped = huesped
+            self.entradas.insertarAlFinal(huesped)
+            print("Entrada registrada correctamente")
+        else:
+            print("Habitación no disponible")
+
+    # Registrar salida
+    def registrar_salida(self, cedula):
         actual = self.entradas.cabeza
-        while actual is not None:
+
+        while actual:
+            if actual.data.cedula == cedula:
+                huesped = actual.data
+                habitacion = self.buscar_habitacion(huesped.habitacion)
+
+                habitacion.disponible = True
+                habitacion.huesped = None
+
+                self.salidas.insertarAlFinal(huesped)
+                self.entradas.eliminarObjeto(huesped)
+
+                print("Salida registrada correctamente")
+                return
+
+            actual = actual.siguiente
+
+        print("Huésped no encontrado")
+
+    # Consulta individual
+    def consulta_individual(self, cedula):
+        actual = self.entradas.cabeza
+        while actual:
             if actual.data.cedula == cedula:
                 print(actual.data)
                 return
             actual = actual.siguiente
         print("Huésped no encontrado")
 
-    def consulta_huesped_total_por_cedula(self):
-        print("Huéspedes actuales por cédula:")
+    # Consulta total por orden de llegada
+    def consulta_total_llegada(self):
+        print("\nHuéspedes por orden de llegada:")
         actual = self.entradas.cabeza
-        while actual is not None:
+        while actual:
             print(actual.data)
             actual = actual.siguiente
 
-    def consulta_huesped_total_por_orden_llegada(self):
-        print("Huéspedes actuales por orden de llegada:")
+    # Consulta total por cédula (ordenado simple)
+    def consulta_total_cedula(self):
+        lista = []
         actual = self.entradas.cabeza
-        while actual is not None:
-            print(actual.data)
+        while actual:
+            lista.append(actual.data)
             actual = actual.siguiente
 
+        lista.sort(key=lambda x: x.cedula)
+
+        print("\nHuéspedes ordenados por cédula:")
+        for h in lista:
+            print(h)
+
+    # Habitaciones disponibles
     def habitaciones_disponibles(self):
-        print("Habitaciones disponibles:")
+        print("\nHabitaciones disponibles:")
         actual = self.habitaciones.cabeza
-        while actual is not None:
+        while actual:
             if actual.data.disponible:
                 print(actual.data)
             actual = actual.siguiente
 
+    # Habitaciones ocupadas
     def habitaciones_ocupadas(self):
-        print("Habitaciones ocupadas:")
+        print("\nHabitaciones ocupadas:")
         actual = self.habitaciones.cabeza
-        while actual is not None:
+        while actual:
             if not actual.data.disponible:
                 print(actual.data)
             actual = actual.siguiente
+
+# MENÚ PRINCIPAL
+hotel = SistemaHotel(5)
+
+while True:
+    print("\n--- SISTEMA HOTEL ---")
+    print("1. Registrar entrada")
+    print("2. Registrar salida")
+    print("3. Consulta huésped individual")
+    print("4. Lista huéspedes por llegada")
+    print("5. Lista huéspedes por cédula")
+    print("6. Habitaciones disponibles")
+    print("7. Habitaciones ocupadas")
+    print("8. Salir")
+
+    opcion = input("Seleccione una opción: ")
+
+    if opcion == "1":
+        cedula = input("Cédula: ")
+        nombre = input("Nombre: ")
+        habitacion = int(input("Número de habitación: "))
+        hotel.registrar_entrada(cedula, nombre, habitacion)
+
+    elif opcion == "2":
+        cedula = input("Cédula del huésped: ")
+        hotel.registrar_salida(cedula)
+
+    elif opcion == "3":
+        cedula = input("Cédula: ")
+        hotel.consulta_individual(cedula)
+
+    elif opcion == "4":
+        hotel.consulta_total_llegada()
+
+    elif opcion == "5":
+        hotel.consulta_total_cedula()
+
+    elif opcion == "6":
+        hotel.habitaciones_disponibles()
+
+    elif opcion == "7":
+        hotel.habitaciones_ocupadas()
+
+    elif opcion == "8":
+        print("Saliendo del sistema...")
+        break
+
+    else:
+        print("Opción inválida")
 
